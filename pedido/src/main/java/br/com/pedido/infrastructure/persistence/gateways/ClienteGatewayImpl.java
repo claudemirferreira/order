@@ -11,7 +11,6 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
-import java.util.Optional;
 
 @Slf4j
 @Service
@@ -26,16 +25,16 @@ public class ClienteGatewayImpl implements ClienteGateway {
     }
 
     @Override
-    public Optional<ClienteDomain> criar(ClienteDomain clienteDomain) {
+    public ClienteDomain criar(ClienteDomain clienteDomain) {
         if (Objects.isNull(clienteDomain)) {
             log.warn("Tentativa de criar um cliente com dados nulos.");
-            return Optional.empty();
+            return null;
         }
 
         try {
             Cliente cliente = convertToEntity(clienteDomain);
             Cliente clienteSalvo = salvarCliente(cliente);
-            return Optional.of(convertToDomain(clienteSalvo));
+            return convertToDomain(clienteSalvo);
         } catch (DataAccessException e) {
             log.error("Erro ao salvar o cliente no banco de dados: {}", clienteDomain, e);
             throw new PersistenceException("Erro ao salvar o cliente no banco de dados", e);

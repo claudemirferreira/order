@@ -1,7 +1,6 @@
 package br.com.pedido.application.mapper;
 
 import br.com.pedido.application.dto.PedidoDTO;
-import br.com.pedido.core.domain.Pedido;
 
 public class PedidoMapper {
     public static PedidoDTO toDTO(Pedido pedido) {

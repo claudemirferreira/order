@@ -1,8 +1,8 @@
 package br.com.pedido.core.usecase;
 
 
-import br.com.pedido.core.domain.Pedido;
+import br.com.pedido.core.domain.PedidoDomain;
 
 public interface CriarPedidoUseCase {
-    Pedido executar(Pedido pedido);
+    PedidoDomain executar(PedidoDomain pedidoDomain);
 }

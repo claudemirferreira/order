@@ -1,6 +1,6 @@
 package br.com.pedido.core.usecase.impl;
 
-import br.com.pedido.core.domain.Pedido;
+import br.com.pedido.core.domain.PedidoDomain;
 import br.com.pedido.core.usecase.CriarPedidoUseCase;
 import org.springframework.stereotype.Service;
 
@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 public class CriarPedidoUseCaseImpl implements CriarPedidoUseCase {
 
     @Override
-    public Pedido executar(Pedido pedido) {
+    public PedidoDomain executar(PedidoDomain pedido) {
         return null;
     }
 

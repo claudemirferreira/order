@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: mysql_container
+    environment:
+      MYSQL_ROOT_PASSWORD: admin  # Senha do root
+      MYSQL_DATABASE: pedido-db         # Banco de dados inicial
+      MYSQL_USER: admin                 # Usuário regular (não root)
+      MYSQL_PASSWORD: admin        # Senha do usuário regular
+    ports:
+      - "3306:3306"  # Mapeia a porta 3306 do contêiner para a porta 3306 do host
+    volumes:
+      - mysql_data:/var/lib/mysql  # Persistência de dados
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql  # Script de inicialização
+    networks:
+      - mysql_network
+
+volumes:
+  mysql_data:  # Volume para persistir os dados do MySQL
+
+networks:
+  mysql_network:  # Rede para o contêiner MySQL

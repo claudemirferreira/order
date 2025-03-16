@@ -1,4 +1,17 @@
-
+spring:
+  kafka:
+    bootstrap-servers: broker:9092  # Nome do host do broker Kafka
+    consumer:
+      group-id: pedido-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
+      properties:
+        spring:
+          json:
+            trusted:
+              packages: '*'  # Permite desserializar qualquer pacote
+        spring.deserializer.value.delegate.class: br.com.pagamento.infrastructure.messaging.PedidoDomainDeserializer
 
 springdoc:
   api-docs:

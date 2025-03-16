@@ -3,7 +3,6 @@ package br.com.pedido.application.mapper;
 import br.com.pedido.application.dto.ItemPedidoDTO;
 import br.com.pedido.core.domain.ItemPedidoDomain;
 import br.com.pedido.infrastructure.persistence.entity.ItemPedido;
-import br.com.pedido.infrastructure.persistence.entity.Pedido;
 import org.springframework.stereotype.Component;
 
 import java.util.List;

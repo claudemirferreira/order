@@ -32,7 +32,7 @@ public class PedidoGatewayImpl implements PedidoGateway {
     public PedidoDomain salvar(PedidoDomain pedidoDomain) {
         Objects.requireNonNull(pedidoDomain, "PedidoDomain não pode ser nulo.");
         Pedido pedidoEntity = toEntity(pedidoDomain);
-        Pedido pedidoSalvo = pedidoRepository.save(pedidoEntity);
+        pedidoRepository.save(pedidoEntity);
         return modelMapper.map(pedidoEntity, PedidoDomain.class);
     }
 

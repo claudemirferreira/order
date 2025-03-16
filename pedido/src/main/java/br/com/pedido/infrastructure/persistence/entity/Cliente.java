@@ -9,7 +9,8 @@ import lombok.Data;
 public class Cliente {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "cliente_id")
     private Long id;
 
     @Column(name = "nome", nullable = false)

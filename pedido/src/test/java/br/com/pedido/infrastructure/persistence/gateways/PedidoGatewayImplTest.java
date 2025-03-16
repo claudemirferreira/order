@@ -4,7 +4,6 @@ import br.com.pedido.application.mapper.ItemPedidoMapper;
 import br.com.pedido.core.domain.ClienteDomain;
 import br.com.pedido.core.domain.ItemPedidoDomain;
 import br.com.pedido.core.domain.PedidoDomain;
-import br.com.pedido.infrastructure.persistence.entity.Cliente;
 import br.com.pedido.infrastructure.persistence.entity.ItemPedido;
 import br.com.pedido.infrastructure.persistence.entity.Pedido;
 import br.com.pedido.infrastructure.persistence.repository.PedidoRepository;

@@ -38,10 +38,6 @@ class PedidoDomainTest {
 
     @Test
     void construtorComParametros_DeveInicializarCamposCorretamente() {
-        // Act
-        PedidoDomain pedido = new PedidoDomain(cliente, itens);
-
-        // Assert
         assertEquals(cliente, pedido.getCliente());
         assertEquals("PENDENTE", pedido.getStatus());
         assertNotNull(pedido.getDataPedido());
@@ -58,9 +54,7 @@ class PedidoDomainTest {
 
     @Test
     void calcularValorTotal_DeveRetornarZero_QuandoListaDeItensVazia() {
-        List<ItemPedidoDomain> itens = List.of();
-
-        BigDecimal valorTotal = pedido.calcularValorTotal(itens);
+        BigDecimal valorTotal = pedido.calcularValorTotal(List.of());
 
         assertEquals(BigDecimal.ZERO, valorTotal);
     }

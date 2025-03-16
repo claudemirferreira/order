@@ -5,6 +5,7 @@ import br.com.pedido.core.domain.ItemPedidoDomain;
 import br.com.pedido.core.domain.PedidoDomain;
 import br.com.pedido.core.gateways.ClienteGateway;
 import br.com.pedido.core.gateways.PedidoGateway;
+import br.com.pedido.core.gateways.PedidoMessageGateway;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -13,9 +14,11 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
+import java.util.Collections;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -27,38 +30,57 @@ class CriarPedidoUseCaseImplTest {
     @Mock
     private ClienteGateway clienteGateway;
 
+    @Mock
+    private PedidoMessageGateway pedidoMessageGateway;
+
     @InjectMocks
     private CriarPedidoUseCaseImpl criarPedidoUseCase;
 
-    private Long clienteId;
-    private ClienteDomain clienteDomain;
+    private ClienteDomain cliente;
     private List<ItemPedidoDomain> itens;
-    private PedidoDomain pedidoEsperado;
 
     @BeforeEach
     void setUp() {
-        // Configurando dados fictícios para os testes
-        clienteId = 1L;
-        clienteDomain = new ClienteDomain(clienteId, "Cliente Teste", "admin@gmail.com", "endereço");
-        itens = List.of(new ItemPedidoDomain(1L, 1L, 2, BigDecimal.valueOf(10.0)));
-        pedidoEsperado = new PedidoDomain(clienteDomain, itens);
-
-        // Configurando comportamento dos mocks
-        when(clienteGateway.findById(clienteId)).thenReturn(clienteDomain);
-        when(pedidoGateway.salvar(any(PedidoDomain.class))).thenReturn(pedidoEsperado);
+        // Configuração inicial para os testes
+        cliente = new ClienteDomain(1L, "João Silva", "joao@example.com", "xx");
+        itens = Collections.singletonList(new ItemPedidoDomain(1L, 1L,  1, new BigDecimal( 5000.0)));
     }
 
     @Test
-    void executar_DeveCriarEPersistirPedidoComSucesso() {
-        PedidoDomain resultado = criarPedidoUseCase.executar(clienteId, itens);
+    void testExecutar_Sucesso() {
+        // Arrange
+        when(clienteGateway.findById(1L)).thenReturn(cliente);
+        when(pedidoGateway.salvar(any(PedidoDomain.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        assertNotNull(resultado);
-        assertEquals(clienteId, resultado.getCliente().getId());
-        assertEquals(1, resultado.getItens().size());
-        assertEquals(1L, resultado.getItens().get(0).getProdutoId());
+        // Act
+        PedidoDomain pedido = criarPedidoUseCase.executar(1L, itens);
 
-        verify(clienteGateway, times(1)).findById(clienteId);
+        // Assert
+        assertNotNull(pedido);
+        assertEquals(cliente, pedido.getCliente());
+        assertEquals(itens, pedido.getItens());
+
+        // Verifica se os métodos dos gateways foram chamados
+        verify(clienteGateway, times(1)).findById(1L);
         verify(pedidoGateway, times(1)).salvar(any(PedidoDomain.class));
+        verify(pedidoMessageGateway, times(1)).send(any(PedidoDomain.class));
     }
 
+    @Test
+    void testExecutar_ClienteNaoEncontrado() {
+        // Arrange
+        when(clienteGateway.findById(1L)).thenReturn(null);
+
+        // Act
+        PedidoDomain pedido = criarPedidoUseCase.executar(1L, itens);
+
+        // Assert
+        assertNotNull(pedido);
+        assertEquals(itens, pedido.getItens());
+
+        // Verifica se os métodos dos gateways foram chamados
+        verify(clienteGateway, times(1)).findById(1L);
+        verify(pedidoGateway, times(1)).salvar(any(PedidoDomain.class));
+        verify(pedidoMessageGateway, times(1)).send(any(PedidoDomain.class));
+    }
 }

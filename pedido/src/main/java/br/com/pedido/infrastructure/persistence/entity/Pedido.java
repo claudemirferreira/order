@@ -19,7 +19,8 @@ import java.util.List;
 public class Pedido {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "pedido_id")
     private Long id;
 
     @Column(name = "cliente_id", nullable = false)

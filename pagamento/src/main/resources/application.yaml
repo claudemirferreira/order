@@ -1,0 +1,14 @@
+
+
+springdoc:
+  api-docs:
+    enabled: 'true'
+  swagger-ui:
+    enabled: 'true'
+    path: /swagger-ui.html
+
+server:
+  servlet:
+    context-path: /
+  port: '8081'
+

@@ -1,9 +1,10 @@
 package br.com.pedido.infrastructure.persistence.gateways;
 
 import br.com.pedido.core.domain.ClienteDomain;
+import br.com.pedido.core.exception.EmailJaExisteException;
+import br.com.pedido.core.exception.RecursoNaoEncontradoException;
 import br.com.pedido.infrastructure.persistence.entity.Cliente;
 import br.com.pedido.infrastructure.persistence.repository.ClienteRepository;
-import jakarta.persistence.PersistenceException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -12,6 +13,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 import org.springframework.dao.DataAccessException;
+
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -28,64 +31,81 @@ class ClienteGatewayImplTest {
     @InjectMocks
     private ClienteGatewayImpl clienteGateway;
 
+    private Long clienteId;
+    private Cliente clienteEntity;
     private ClienteDomain clienteDomain;
-    private Cliente cliente;
 
     @BeforeEach
     void setUp() {
-        clienteDomain = new ClienteDomain("João Silva", "joao.silva@example.com", "Rua das Flores, 123");
-        cliente = new Cliente();
-        cliente.setId(1L);
-        cliente.setNome("João Silva");
-        cliente.setEmail("joao.silva@example.com");
-        cliente.setEndereco("Rua das Flores, 123");
+        clienteId = 1L;
+        clienteEntity = new Cliente();
+        clienteEntity.setId(clienteId);
+        clienteEntity.setEmail("teste@email.com");
+
+        clienteDomain = new ClienteDomain();
+        clienteDomain.setId(clienteId);
+        clienteDomain.setEmail("teste@email.com");
     }
 
     @Test
-    void criar_DeveRetornarClienteDomain_QuandoDadosValidos() {
-        // Arrange
-        when(modelMapper.map(clienteDomain, Cliente.class)).thenReturn(cliente);
-        when(clienteRepository.save(cliente)).thenReturn(cliente);
-        when(modelMapper.map(cliente, ClienteDomain.class)).thenReturn(clienteDomain);
+    void criar_DeveSalvarERetornarClienteDomain_SeNaoExistirErro() {
+        when(modelMapper.map(clienteDomain, Cliente.class)).thenReturn(clienteEntity);
+        when(clienteRepository.save(clienteEntity)).thenReturn(clienteEntity);
+        when(modelMapper.map(clienteEntity, ClienteDomain.class)).thenReturn(clienteDomain);
 
-        // Act
         ClienteDomain resultado = clienteGateway.criar(clienteDomain);
 
-        // Assert
         assertNotNull(resultado);
-        assertEquals(clienteDomain.getNome(), resultado.getNome());
         assertEquals(clienteDomain.getEmail(), resultado.getEmail());
-        assertEquals(clienteDomain.getEndereco(), resultado.getEndereco());
-        verify(modelMapper, times(1)).map(clienteDomain, Cliente.class);
-        verify(clienteRepository, times(1)).save(cliente);
-        verify(modelMapper, times(1)).map(cliente, ClienteDomain.class);
+
+        verify(clienteRepository, times(1)).save(clienteEntity);
+        verify(modelMapper, times(2)).map(any(), any());
     }
 
     @Test
-    void criar_DeveRetornarNull_QuandoClienteDomainNulo() {
-        // Act
+    void criar_DeveLancarEmailJaExisteException_SeErroDeBancoAcontecer() {
+        when(modelMapper.map(clienteDomain, Cliente.class)).thenReturn(clienteEntity);
+        when(clienteRepository.save(clienteEntity)).thenThrow(new DataAccessException("Erro no banco") {});
+
+        EmailJaExisteException exception = assertThrows(EmailJaExisteException.class, () -> 
+            clienteGateway.criar(clienteDomain)
+        );
+
+        assertTrue(exception.getMessage().contains("Erro email " + clienteDomain.getEmail() + " já existe"));
+        verify(clienteRepository, times(1)).save(clienteEntity);
+    }
+
+    @Test
+    void criar_DeveRetornarNulo_SeClienteDomainForNulo() {
         ClienteDomain resultado = clienteGateway.criar(null);
-
-        // Assert
         assertNull(resultado);
-        verify(modelMapper, never()).map(any(), any());
-        verify(clienteRepository, never()).save(any());
     }
 
     @Test
-    void criar_DeveLancarPersistenceException_QuandoErroNoBancoDeDados() {
-        // Arrange
-        when(modelMapper.map(clienteDomain, Cliente.class)).thenReturn(cliente);
-        when(clienteRepository.save(cliente)).thenThrow(new DataAccessException("Erro no banco de dados") {});
+    void findById_DeveRetornarClienteDomain_SeClienteExistir() {
+        when(clienteRepository.findById(clienteId)).thenReturn(Optional.of(clienteEntity));
+        when(modelMapper.map(clienteEntity, ClienteDomain.class)).thenReturn(clienteDomain);
 
-        // Act & Assert
-        PersistenceException exception = assertThrows(PersistenceException.class, () -> {
-            clienteGateway.criar(clienteDomain);
-        });
+        ClienteDomain resultado = clienteGateway.findById(clienteId);
 
-        assertEquals("Erro ao salvar o cliente no banco de dados", exception.getMessage());
-        verify(modelMapper, times(1)).map(clienteDomain, Cliente.class);
-        verify(clienteRepository, times(1)).save(cliente);
-        verify(modelMapper, never()).map(cliente, ClienteDomain.class);
+        assertNotNull(resultado);
+        assertEquals(clienteId, resultado.getId());
+        assertEquals(clienteDomain.getEmail(), resultado.getEmail());
+
+        verify(clienteRepository, times(1)).findById(clienteId);
+        verify(modelMapper, times(1)).map(clienteEntity, ClienteDomain.class);
+    }
+
+    @Test
+    void findById_DeveLancarExcecao_SeClienteNaoExistir() {
+        when(clienteRepository.findById(clienteId)).thenReturn(Optional.empty());
+
+        RecursoNaoEncontradoException exception = assertThrows(RecursoNaoEncontradoException.class, () -> 
+            clienteGateway.findById(clienteId)
+        );
+
+        assertEquals("Cliente não encontrado com o ID: " + clienteId, exception.getMessage());
+        verify(clienteRepository, times(1)).findById(clienteId);
+        verifyNoInteractions(modelMapper);
     }
 }

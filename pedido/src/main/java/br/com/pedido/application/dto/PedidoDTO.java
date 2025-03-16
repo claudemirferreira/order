@@ -1,17 +1,14 @@
 package br.com.pedido.application.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.List;
 
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-public class PedidoDTO {
-    private String cliente;
-    private String produto;
-    private int quantidade;
-    // Getters e Setters
+public record PedidoDTO(
+        Long id,
+        Long clienteId,
+        LocalDateTime dataPedido,
+        String status,
+        BigDecimal valorTotal,
+        List<ItemPedidoDTO> itensPedido) {
 }

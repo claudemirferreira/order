@@ -25,7 +25,7 @@ public class ClienteController {
     }
 
     @PostMapping
-    public ResponseEntity<ClienteDTO> criarCliente(@Valid @RequestBody CriarClienteDTO dto) {
+    public ResponseEntity<ClienteDTO> criarCliente(@RequestBody @Valid CriarClienteDTO dto) {
         ClienteDomain clienteDomain = clienteMapper.toDomain(dto);
         ClienteDomain clienteSalvo = criarClienteUseCase.executar(clienteDomain);
         return ResponseEntity.ok(this.clienteMapper.toDTO(clienteSalvo));

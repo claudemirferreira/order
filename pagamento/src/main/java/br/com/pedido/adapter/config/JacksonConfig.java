@@ -1,4 +1,4 @@
-package br.com.pagamento.adapter.config;
+package br.com.pedido.adapter.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;

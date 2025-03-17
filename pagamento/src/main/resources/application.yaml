@@ -7,6 +7,19 @@ spring:
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
     bootstrap-servers: localhost:29092
 
+  datasource:
+    url: jdbc:mysql://localhost:3306/pagamento-db
+    username: admin
+    password: admin
+
+  jpa:
+    show-sql: true
+    database: mysql
+    open-in-view: false
+    hibernate:
+      ddl-auto: update
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+
 springdoc:
   api-docs:
     enabled: 'true'

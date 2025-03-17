@@ -5,20 +5,20 @@ services:
     image: mysql:8.0
     container_name: mysql_container
     environment:
-      MYSQL_ROOT_PASSWORD: admin
-      MYSQL_DATABASE: pedido-db
-      MYSQL_USER: admin
-      MYSQL_PASSWORD: admin
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: pedido-db  # Banco de dados padrão criado automaticamente
+      MYSQL_USER: root
+      MYSQL_PASSWORD: root
     ports:
-      - "3306:3306"  # Mapeia a porta 3306 do contêiner para a porta 3306 do host
+      - "3306:3306"
     volumes:
-      - mysql_data:/var/lib/mysql  # Persistência de dados
+      - mysql_data:/var/lib/mysql
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql  # Script de inicialização
     networks:
       - pedido_network
 
   zookeeper:
-    image: confluentinc/cp-zookeeper:7.0.1  # Imagem oficial do Zookeeper
+    image: confluentinc/cp-zookeeper:7.0.1
     hostname: zookeeper
     container_name: zookeeper
     ports:
@@ -30,14 +30,14 @@ services:
       - pedido_network
 
   broker:
-    image: confluentinc/cp-kafka:7.0.1  # Imagem oficial do Kafka
+    image: confluentinc/cp-kafka:7.0.1
     hostname: broker
     container_name: broker
     depends_on:
       - zookeeper
     ports:
-      - "9092:9092"  # Porta padrão do Kafka
-      - "29092:29092"  # Porta para acesso externo
+      - "9092:9092"
+      - "29092:29092"
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
@@ -50,20 +50,20 @@ services:
       - pedido_network
 
   kafkaui:
-    image: provectuslabs/kafka-ui:latest  # Interface gráfica para o Kafka
+    image: provectuslabs/kafka-ui:latest
     container_name: kafkaui
     ports:
-      - "8082:8080"  # Porta para acessar a interface do Kafka UI
+      - "8082:8080"
     environment:
       - KAFKA_CLUSTERS_0_NAME=local
-      - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=broker:9092  # Conecta ao broker Kafka
+      - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=broker:9092
     depends_on:
       - broker
     networks:
       - pedido_network
 
 volumes:
-  mysql_data:  # Volume para persistir os dados do MySQL
+  mysql_data:
 
 networks:
-  pedido_network:  # Rede para conectar todos os serviços
+  pedido_network:

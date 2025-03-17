@@ -1,5 +1,7 @@
 package br.com.pedido.infrastructure.messaging;
 
+import br.com.pedido.application.mapper.PagamentoMapper;
+import br.com.pedido.application.mapper.PedidoMapper;
 import br.com.pedido.core.domain.PedidoDomain;
 import br.com.pedido.core.gateways.PedidoMessageGateway;
 import lombok.extern.slf4j.Slf4j;
@@ -11,11 +13,13 @@ import org.springframework.stereotype.Service;
 @Service
 public class PedidoMessageGatewayImpl implements PedidoMessageGateway {
 
+    private final PagamentoMapper pagamentoMapper;
     private final KafkaTemplate<String, Object> kafkaTemplate;
     private final String topic;
 
-    public PedidoMessageGatewayImpl(KafkaTemplate<String, Object> kafkaTemplate,
+    public PedidoMessageGatewayImpl(PagamentoMapper pagamentoMapper, KafkaTemplate<String, Object> kafkaTemplate,
                                     @Value("${kafka.topic}") String topic) {
+        this.pagamentoMapper = pagamentoMapper;
         this.kafkaTemplate = kafkaTemplate;
         this.topic = topic;
     }
@@ -24,7 +28,9 @@ public class PedidoMessageGatewayImpl implements PedidoMessageGateway {
     public void send(PedidoDomain pedido) {
         log.info("==============================================================");
         log.info("{}", pedido);
-        kafkaTemplate.send(this.topic, pedido);
+        var dto = pagamentoMapper.toDTO(pedido);
+        log.info("{}", dto);
+        kafkaTemplate.send(this.topic, dto);
     }
 
 }

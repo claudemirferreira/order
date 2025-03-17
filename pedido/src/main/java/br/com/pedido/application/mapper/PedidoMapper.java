@@ -1,6 +1,7 @@
 package br.com.pedido.application.mapper;
 
 import br.com.pedido.application.dto.PedidoDTO;
+import br.com.pedido.application.dto.PedidoMessageDTO;
 import br.com.pedido.core.domain.PedidoDomain;
 import br.com.pedido.infrastructure.persistence.entity.Pedido;
 import org.springframework.stereotype.Component;
@@ -34,6 +35,15 @@ public class PedidoMapper {
                 .dataPedido(pedidoDomain.getDataPedido())
                 .status(pedidoDomain.getStatus())
                 .valorTotal(pedidoDomain.getValorTotal())
+                .build();
+    }
+
+    public PedidoMessageDTO toDomain(PedidoDTO pedidoDTO) {
+        return PedidoMessageDTO
+                .builder()
+                .clienteId(pedidoDTO.clienteId())
+                .valorTotal(pedidoDTO.valorTotal())
+                .dataPedido(pedidoDTO.dataPedido())
                 .build();
     }
 }

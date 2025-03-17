@@ -1,6 +1,6 @@
 package br.com.pedido.infrastructure.messaging;
 
-import br.com.pedido.core.domain.PedidoDomain;
+import br.com.pedido.application.dto.PedidoMessageDTO;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,14 +25,15 @@ public class ConfigConsumer {
     private String topic;
 
     @Bean
-    public ConsumerFactory<String, PedidoDomain> consumerFactory() {
-        JsonDeserializer<PedidoDomain> jsonDeserializer = new JsonDeserializer<>(PedidoDomain.class);
+    public ConsumerFactory<String, PedidoMessageDTO> consumerFactory() {
+        JsonDeserializer<PedidoMessageDTO> jsonDeserializer = new JsonDeserializer<>(PedidoMessageDTO.class);
         return new DefaultKafkaConsumerFactory<>(
                 Map.of(
                         ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, this.bootstrapServers,
                         ConsumerConfig.GROUP_ID_CONFIG, this.topic,
                         ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class,
-                        ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class
+                        ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class,
+                        JsonDeserializer.TRUSTED_PACKAGES, "*"
                 ),
                 new StringDeserializer(),
                 jsonDeserializer
@@ -40,8 +41,8 @@ public class ConfigConsumer {
     }
 
     @Bean
-    public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, PedidoDomain>> kafkaListenerContainerFactory() {
-        ConcurrentKafkaListenerContainerFactory<String, PedidoDomain> factory =
+    public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, PedidoMessageDTO>> kafkaListenerContainerFactory() {
+        ConcurrentKafkaListenerContainerFactory<String, PedidoMessageDTO> factory =
                 new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerFactory());
         return factory;

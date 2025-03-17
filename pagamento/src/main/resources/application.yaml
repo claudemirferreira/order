@@ -5,10 +5,15 @@ spring:
       auto-offset-reset: earliest
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring:
+          json:
+            trusted:
+              packages: "*"
     bootstrap-servers: localhost:29092
 
   datasource:
-    url: jdbc:mysql://localhost:3306/pagamento-db
+    url: jdbc:mysql://localhost:3306/pedido-db
     username: admin
     password: admin
 

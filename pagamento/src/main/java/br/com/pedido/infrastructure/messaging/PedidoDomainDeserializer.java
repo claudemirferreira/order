@@ -1,11 +1,11 @@
 package br.com.pedido.infrastructure.messaging;
 
-import br.com.pedido.core.domain.PedidoDomain;
+import br.com.pedido.application.dto.PedidoMessageDTO;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
 
-public class PedidoDomainDeserializer extends JsonDeserializer<PedidoDomain> {
+public class PedidoDomainDeserializer extends JsonDeserializer<PedidoMessageDTO> {
     public PedidoDomainDeserializer() {
-        super(PedidoDomain.class);
+        super(PedidoMessageDTO.class);
         this.addTrustedPackages("*");
     }
 }

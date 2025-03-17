@@ -32,9 +32,9 @@ public class CriarPedidoUseCaseImpl implements CriarPedidoUseCase {
     public PedidoDomain executar(Long clienteId, List<ItemPedidoDomain> itens) {
         ClienteDomain clienteDomain = clienteGateway.findById(clienteId);
         PedidoDomain pedido = new PedidoDomain(clienteDomain, itens);
-        pedidoGateway.salvar(pedido);
-        pedidoMessageGateway.send(pedido);
-        return pedido;
+        var pedidoSalvo = pedidoGateway.salvar(pedido);
+        pedidoMessageGateway.send(pedidoSalvo);
+        return pedidoSalvo;
     }
 
 }

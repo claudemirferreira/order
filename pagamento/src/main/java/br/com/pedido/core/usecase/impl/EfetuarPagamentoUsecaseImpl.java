@@ -25,11 +25,10 @@ public class EfetuarPagamentoUsecaseImpl implements EfetuarPagamentoUsecase {
 
     @Override
     public void execute(PagamentoDomain pagamentoDomain) {
-        log.info("{}", pagamentoDomain);
         pagamentoDomain.setDataPagamento(LocalDateTime.now());
         pagamentoDomain.setStatusPagamento(Status.PAGO);
         log.info("{}", pagamentoDomain);
-        pagamentoGateway.salvar(pagamentoDomain);
+        pagamentoDomain = pagamentoGateway.salvar(pagamentoDomain);
         pagamentoMessagingGateway.send(pagamentoDomain);
 
     }

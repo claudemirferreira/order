@@ -20,7 +20,7 @@ public class PagamentoGatewayImpl implements PagamentoGateway {
 
     public PagamentoDomain salvar(PagamentoDomain pagamentoDomain) {
         Pagamento pagamento = modelMapper.map(pagamentoDomain, Pagamento.class);
-        pagamentoRepository.save(pagamento);
+        pagamento = pagamentoRepository.save(pagamento);
         return modelMapper.map(pagamento, PagamentoDomain.class);
     }
 

@@ -18,7 +18,7 @@ public class PedidoMessageGatewayImpl implements PedidoMessageGateway {
     private final String topic;
 
     public PedidoMessageGatewayImpl(PagamentoMapper pagamentoMapper, KafkaTemplate<String, Object> kafkaTemplate,
-                                    @Value("${kafka.topic}") String topic) {
+                                    @Value("${kafka.pedidoTopic}") String topic) {
         this.pagamentoMapper = pagamentoMapper;
         this.kafkaTemplate = kafkaTemplate;
         this.topic = topic;

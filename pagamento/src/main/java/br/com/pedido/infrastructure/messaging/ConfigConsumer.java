@@ -21,7 +21,7 @@ public class ConfigConsumer {
     @Value("${spring.kafka.bootstrap-servers}")
     private String bootstrapServers;
 
-    @Value("${kafka.topic}")
+    @Value("${kafka.pedidoTopic}")
     private String topic;
 
     @Bean

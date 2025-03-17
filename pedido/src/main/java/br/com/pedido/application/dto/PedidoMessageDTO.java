@@ -16,6 +16,5 @@ public class PedidoMessageDTO {
     private Long id;
     private Long clienteId;
     private LocalDateTime dataPedido;
-    private String status;
     private BigDecimal valorTotal;
 }

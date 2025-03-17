@@ -15,7 +15,6 @@ public class PagamentoMapper {
                 .clienteId(pedidoDomain.getCliente().getId())
                 .valorTotal(pedidoDomain.getValorTotal())
                 .dataPedido(pedidoDomain.getDataPedido())
-                .status(pedidoDomain.getStatus())
                 .build();
     }
 }

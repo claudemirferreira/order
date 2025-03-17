@@ -1,5 +1,9 @@
 spring:
   kafka:
+    bootstrap-servers: localhost:29092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
     consumer:
       group-id: pedido-group
       auto-offset-reset: earliest
@@ -10,7 +14,6 @@ spring:
           json:
             trusted:
               packages: "*"
-    bootstrap-servers: localhost:29092
 
   datasource:
     url: jdbc:mysql://localhost:3306/pedido-db
@@ -38,4 +41,6 @@ server:
   port: '8081'
 
 kafka:
-  topic: pedido-topic
+  pedidoTopic: pedido-topic
+  pagamentoTopic: pagamento-topic
+

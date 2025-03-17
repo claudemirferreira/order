@@ -34,4 +34,5 @@ server:
   port: '8080'
 
 kafka:
-  topic: pedido-topic
+  pedidoTopic: pedido-topic
+  pagamentoTopic: pagamento-topic

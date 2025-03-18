@@ -35,7 +35,7 @@ java -jar target/pagamento-0.0.1-SNAPSHOT.jar
 
 ## System Designer
 
-![alt text](<Screenshot from 2025-03-18 08-15-00.png>)
+![alt text](image-1.png)
 
 
 ## Diagrama Entidade e Relacionamento

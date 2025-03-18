@@ -1,4 +1,4 @@
-package br.com.pedido.infrastructure.messaging;
+package br.com.pedido.infrastructure.messaging.config;
 
 import br.com.pedido.application.dto.PedidoMessageDTO;
 import org.apache.kafka.clients.consumer.ConsumerConfig;

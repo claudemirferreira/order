@@ -22,8 +22,8 @@ public class PedidoConsumer {
     }
 
     @KafkaListener(topics = "pedido-topic", groupId = "pedido-group", containerFactory = "kafkaListenerContainerFactory")
-    public void consume(ConsumerRecord<String, PedidoMessageDTO> record) {
-        PedidoMessageDTO pedido = record.value();
+    public void consume(ConsumerRecord<String, PedidoMessageDTO> message) {
+        PedidoMessageDTO pedido = message.value();
         log.info("{}", pedido);
         PagamentoDomain pagamentoDomain = pagamentoMapper.toDomain(pedido);
         efetuarPagamentoUsecase.execute(pagamentoDomain);

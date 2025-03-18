@@ -22,13 +22,11 @@ public class PagamentoProducer implements PagamentoMessagingGateway {
     }
 
     public void send(PagamentoDomain pagamentoDomain) {
-        log.info("==============================================================");
         PagamentoMessagingDTO dto = PagamentoMessagingDTO
                 .builder()
                 .pedidoId(pagamentoDomain.getPedidoId())
                 .statusPagamento(pagamentoDomain.getStatusPagamento())
                 .build();
-        log.info("send {}", pagamentoDomain);
         log.info("send {}", dto);
         kafkaTemplate.send(this.topic, dto);
     }

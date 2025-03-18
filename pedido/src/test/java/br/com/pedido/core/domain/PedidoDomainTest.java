@@ -1,5 +1,6 @@
 package br.com.pedido.core.domain;
 
+import br.com.pedido.core.enums.Status;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -29,17 +30,17 @@ class PedidoDomainTest {
     @Test
     void construtorPadrao_DeveInicializarListaDeItens() {
         // Arrange & Act
-        PedidoDomain pedido = new PedidoDomain();
+        PedidoDomain pedidoDomain = new PedidoDomain();
 
         // Assert
-        assertNotNull(pedido.getItens());
-        assertTrue(pedido.getItens().isEmpty());
+        assertNotNull(pedidoDomain.getItens());
+        assertTrue(pedidoDomain.getItens().isEmpty());
     }
 
     @Test
     void construtorComParametros_DeveInicializarCamposCorretamente() {
         assertEquals(cliente, pedido.getCliente());
-        assertEquals("PENDENTE", pedido.getStatus());
+        assertEquals(Status.PENDENTE, pedido.getStatus());
         assertNotNull(pedido.getDataPedido());
         assertEquals(BigDecimal.valueOf(80.0), pedido.getValorTotal()); // 2 * 10 + 3 * 20 = 80
         assertEquals(itens, pedido.getItens());

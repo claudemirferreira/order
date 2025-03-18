@@ -1,86 +1,77 @@
-//package br.com.pedido.core.usecase.impl;
-//
-//import br.com.pedido.core.domain.ClienteDomain;
-//import br.com.pedido.core.domain.ItemPedidoDomain;
-//import br.com.pedido.core.domain.PedidoDomain;
-//import br.com.pedido.core.gateways.ClienteGateway;
-//import br.com.pedido.core.gateways.PedidoGateway;
-//import br.com.pedido.core.gateways.PedidoMessageGateway;
-//import org.junit.jupiter.api.BeforeEach;
-//import org.junit.jupiter.api.Test;
-//import org.junit.jupiter.api.extension.ExtendWith;
-//import org.mockito.InjectMocks;
-//import org.mockito.Mock;
-//import org.mockito.junit.jupiter.MockitoExtension;
-//
-//import java.math.BigDecimal;
-//import java.util.Collections;
-//import java.util.List;
-//
-//import static org.junit.jupiter.api.Assertions.assertEquals;
-//import static org.junit.jupiter.api.Assertions.assertNotNull;
-//import static org.mockito.Mockito.*;
-//
-//@ExtendWith(MockitoExtension.class)
-//class CriarPedidoUseCaseImplTest {
-//
-//    @Mock
-//    private PedidoGateway pedidoGateway;
-//
-//    @Mock
-//    private ClienteGateway clienteGateway;
-//
-//    @Mock
-//    private PedidoMessageGateway pedidoMessageGateway;
-//
-//    @InjectMocks
-//    private CriarPedidoUseCaseImpl criarPedidoUseCase;
-//
-//    private ClienteDomain cliente;
-//    private List<ItemPedidoDomain> itens;
-//
-//    @BeforeEach
-//    void setUp() {
-//        // Configuração inicial para os testes
-//        cliente = new ClienteDomain(1L, "João Silva", "joao@example.com", "xx");
-//        itens = Collections.singletonList(new ItemPedidoDomain(1L, 1L,  1, new BigDecimal( 5000.0)));
-//    }
-//
-//    @Test
-//    void testExecutar_Sucesso() {
-//        // Arrange
-//        when(clienteGateway.findById(1L)).thenReturn(cliente);
-//        when(pedidoGateway.salvar(any(PedidoDomain.class))).thenAnswer(invocation -> invocation.getArgument(0));
-//
-//        // Act
-//        PedidoDomain pedido = criarPedidoUseCase.executar(1L, itens);
-//
-//        // Assert
-//        assertNotNull(pedido);
-//        assertEquals(cliente, pedido.getCliente());
-//        assertEquals(itens, pedido.getItens());
-//
-//        // Verifica se os métodos dos gateways foram chamados
-//        verify(clienteGateway, times(1)).findById(1L);
-//        verify(pedidoGateway, times(1)).salvar(any(PedidoDomain.class));
-//        verify(pedidoMessageGateway, times(1)).send(any(PedidoDomain.class));
-//    }
-//
-//    @Test
-//    void testExecutar_ClienteNaoEncontrado() {
-//        // Arrange
-//        when(clienteGateway.findById(1L)).thenReturn(null);
-//
-//        // Act
-//        PedidoDomain pedido = criarPedidoUseCase.executar(1L, itens);
-//
-//        // Assert
-//        assertNotNull(pedido);
-//        assertEquals(itens, pedido.getItens());
-//
-//        // Verifica se os métodos dos gateways foram chamados
-//        verify(clienteGateway, times(1)).findById(1L);
-//        verify(pedidoGateway, times(1)).salvar(any(PedidoDomain.class));
-//        verify(pedidoMessageGateway, times(1)).send(any(PedidoDomain.class));
-//    }
-//}
+package br.com.pedido.core.usecase.impl;
+
+import br.com.pedido.core.domain.ClienteDomain;
+import br.com.pedido.core.domain.ItemPedidoDomain;
+import br.com.pedido.core.domain.PedidoDomain;
+import br.com.pedido.core.gateways.ClienteGateway;
+import br.com.pedido.core.gateways.PedidoGateway;
+import br.com.pedido.core.gateways.PedidoMessageGateway;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
+import java.math.BigDecimal;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.*;
+
+class CriarPedidoUseCaseImplTest {
+
+    @Mock
+    private PedidoGateway pedidoGateway;
+
+    @Mock
+    private ClienteGateway clienteGateway;
+
+    @Mock
+    private PedidoMessageGateway pedidoMessageGateway;
+
+    @InjectMocks
+    private CriarPedidoUseCaseImpl criarPedidoUseCase;
+
+    private ClienteDomain clienteDomain;
+    private List<ItemPedidoDomain> itens;
+
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
+        // Configurando um cliente de teste
+        clienteDomain = new ClienteDomain();
+        clienteDomain.setId(1L);
+        clienteDomain.setNome("Cliente Teste");
+        clienteDomain.setEmail("cliente@teste.com");
+        clienteDomain.setEndereco("Endereco Teste");
+
+        // Configurando um item de pedido de teste
+        ItemPedidoDomain itemPedido = new ItemPedidoDomain();
+        itemPedido.setProdutoId(1L);
+        itemPedido.setQuantidade(2);
+        itemPedido.setPrecoUnitario(BigDecimal.valueOf( 50.0));
+        itens = List.of(itemPedido);
+    }
+
+    @Test
+    void shouldCreatePedido() {
+        Long clienteId = 1L;
+
+        when(clienteGateway.findById(clienteId)).thenReturn(clienteDomain);
+
+        PedidoDomain pedidoSalvo = new PedidoDomain(clienteDomain, itens);
+        when(pedidoGateway.salvar(any(PedidoDomain.class))).thenReturn(pedidoSalvo);
+
+        doNothing().when(pedidoMessageGateway).send(pedidoSalvo);
+
+        PedidoDomain pedidoCriado = criarPedidoUseCase.executar(clienteId, itens);
+
+        assertNotNull(pedidoCriado);
+        assertNotNull(pedidoCriado.getCliente());
+        assertNotNull(pedidoCriado.getItens());
+
+        verify(pedidoGateway, times(1)).salvar(any(PedidoDomain.class));
+
+        verify(pedidoMessageGateway, times(1)).send(pedidoCriado);
+    }
+}

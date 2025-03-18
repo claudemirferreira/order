@@ -4,102 +4,78 @@ import br.com.pedido.application.dto.ItemPedidoDTO;
 import br.com.pedido.application.dto.PedidoDTO;
 import br.com.pedido.application.mapper.ItemPedidoMapper;
 import br.com.pedido.application.mapper.PedidoMapper;
-import br.com.pedido.core.domain.ClienteDomain;
-import br.com.pedido.core.domain.ItemPedidoDomain;
 import br.com.pedido.core.domain.PedidoDomain;
+import br.com.pedido.core.enums.Status;
 import br.com.pedido.core.usecase.CriarPedidoUseCase;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import br.com.pedido.core.usecase.ListarPedidoUseCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
-
-
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(PedidoController.class)
 class PedidoControllerTest {
 
-    @Autowired
     private MockMvc mockMvc;
 
-    @MockitoBean
+    @InjectMocks
+    private PedidoController pedidoController;
+
+    @Mock
     private CriarPedidoUseCase criarPedidoUseCase;
 
-    @MockitoBean
+    @Mock
+    private ListarPedidoUseCase listarPedidoUseCase;
+
+    @Mock
     private ItemPedidoMapper itemPedidoMapper;
 
-    @MockitoBean
+    @Mock
     private PedidoMapper pedidoMapper;
 
-    @Autowired
-    private ObjectMapper objectMapper;
-
-    private List<ItemPedidoDTO> itemPedidoDTOList;
-    private List<ItemPedidoDomain> itemPedidoDomainList;
-    private PedidoDomain pedidoDomain;
     private PedidoDTO pedidoDTO;
+    private ItemPedidoDTO itemPedidoDTO;
 
     @BeforeEach
     void setUp() {
-        // Criando um ItemPedidoDTO simulado
-        itemPedidoDTOList = List.of(new ItemPedidoDTO(1L, 2, new BigDecimal("10.00")));
+        MockitoAnnotations.openMocks(this);
+        mockMvc = MockMvcBuilders.standaloneSetup(pedidoController).build();
 
-        // Criando um ItemPedidoDomain simulado
-        itemPedidoDomainList = List.of(ItemPedidoDomain.builder()
-                .produtoId(1L)
-                .quantidade(2)
-                .precoUnitario(new BigDecimal("10.00"))
-                .build());
-
-        // Criando um PedidoDomain simulado
-        pedidoDomain = PedidoDomain.builder()
-                .id(1L)
-                .cliente(new ClienteDomain(1L, "Cliente Teste", "teste@email.com", "aaaa"))
-                .dataPedido(LocalDateTime.now())
-                .status("NOVO")
-                .valorTotal(new BigDecimal("20.00"))
-                .itens(itemPedidoDomainList)
-                .build();
-
-        // Criando um PedidoDTO simulado
-        pedidoDTO = new PedidoDTO(
-                1L,
-                1L,
-                LocalDateTime.now(),
-                "NOVO",
-                new BigDecimal("20.00"),
-                itemPedidoDTOList
-        );
-
-        // Mockando a conversão de DTO para Domain e vice-versa
-        Mockito.when(itemPedidoMapper.toDomain(itemPedidoDTOList)).thenReturn(itemPedidoDomainList);
-        Mockito.when(criarPedidoUseCase.executar(eq(1L), any())).thenReturn(pedidoDomain);
-        Mockito.when(pedidoMapper.toDTO(pedidoDomain)).thenReturn(pedidoDTO);
+        itemPedidoDTO = new ItemPedidoDTO(1L, 2, BigDecimal.valueOf(10.0));
+        pedidoDTO = new PedidoDTO(1L, 1L, LocalDateTime.now(), Status.PENDENTE, BigDecimal.valueOf(100.0), List.of(itemPedidoDTO));
     }
 
     @Test
-    void criarPedido_DeveRetornarPedidoDTO_SeCriacaoForSucesso() throws Exception {
-        mockMvc.perform(post("/pedidos/1")
+    void testCriarPedido() throws Exception {
+        Long clienteId = 1L;
+        PedidoDomain pedidoDomain = new PedidoDomain();
+
+        when(criarPedidoUseCase.executar(eq(clienteId), any())).thenReturn(pedidoDomain);
+        when(pedidoMapper.toDTO(pedidoDomain)).thenReturn(pedidoDTO);
+
+        // Realizando a requisição POST
+        mockMvc.perform(post("/pedidos/{clienteId}", clienteId)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(itemPedidoDTOList)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.clienteId").value(1))
-                .andExpect(jsonPath("$.status").value("NOVO"))
-                .andExpect(jsonPath("$.valorTotal").value(20.00));
+                        .content("[{\"produtoId\":1,\"quantidade\":2,\"precoUnitario\":10.0}]"))
+                .andExpect(status().isOk())  // Espera o status 200 OK
+                .andExpect(jsonPath("$.id").value(pedidoDTO.getId()))
+                .andExpect(jsonPath("$.clienteId").value(pedidoDTO.getClienteId()))
+                .andExpect(jsonPath("$.valorTotal").value(pedidoDTO.getValorTotal()));
+
+        verify(criarPedidoUseCase, times(1)).executar(eq(clienteId), any());
+        verify(pedidoMapper, times(1)).toDTO(pedidoDomain);
     }
+
 }

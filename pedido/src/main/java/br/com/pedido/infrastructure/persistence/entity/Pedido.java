@@ -1,5 +1,6 @@
 package br.com.pedido.infrastructure.persistence.entity;
 
+import br.com.pedido.core.enums.Status;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -30,7 +31,8 @@ public class Pedido {
     private LocalDateTime dataPedido;
 
     @Column(name = "status", nullable = false)
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private Status status;
 
     @Column(name = "valor_total", nullable = false)
     private BigDecimal valorTotal;

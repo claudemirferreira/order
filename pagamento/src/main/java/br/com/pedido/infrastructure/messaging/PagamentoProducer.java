@@ -1,5 +1,6 @@
 package br.com.pedido.infrastructure.messaging;
 
+import br.com.pedido.application.dto.PagamentoMessagingDTO;
 import br.com.pedido.core.domain.PagamentoDomain;
 import br.com.pedido.core.gateways.PagamentoMessagingGateway;
 import lombok.extern.slf4j.Slf4j;
@@ -11,10 +12,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class PagamentoProducer implements PagamentoMessagingGateway {
 
-    private final KafkaTemplate<String, Object> kafkaTemplate;
+    private final KafkaTemplate<String, PagamentoMessagingDTO> kafkaTemplate;
     private final String topic;
 
-    public PagamentoProducer(KafkaTemplate<String, Object> kafkaTemplate,
+    public PagamentoProducer(KafkaTemplate<String, PagamentoMessagingDTO> kafkaTemplate,
                              @Value("${kafka.pagamentoTopic}") String topic) {
         this.kafkaTemplate = kafkaTemplate;
         this.topic = topic;
@@ -22,8 +23,14 @@ public class PagamentoProducer implements PagamentoMessagingGateway {
 
     public void send(PagamentoDomain pagamentoDomain) {
         log.info("==============================================================");
-        log.info("{}", pagamentoDomain);
-        kafkaTemplate.send(this.topic, pagamentoDomain);
+        PagamentoMessagingDTO dto = PagamentoMessagingDTO
+                .builder()
+                .pedidoId(pagamentoDomain.getPedidoId())
+                .statusPagamento(pagamentoDomain.getStatusPagamento())
+                .build();
+        log.info("send {}", pagamentoDomain);
+        log.info("send {}", dto);
+        kafkaTemplate.send(this.topic, dto);
     }
 
 }

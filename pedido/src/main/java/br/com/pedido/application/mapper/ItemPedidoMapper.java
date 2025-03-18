@@ -7,7 +7,8 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toList;
 
 @Component
 public class ItemPedidoMapper {
@@ -15,16 +16,16 @@ public class ItemPedidoMapper {
     public ItemPedidoDomain toDomain(ItemPedidoDTO itemPedidoDTO) {
         Objects.requireNonNull(itemPedidoDTO, "ItemPedidoDTO não pode ser nulo.");
         return ItemPedidoDomain.builder()
-                .produtoId(itemPedidoDTO.produtoId())
-                .quantidade(itemPedidoDTO.quantidade())
-                .precoUnitario(itemPedidoDTO.precoUnitario())
+                .produtoId(itemPedidoDTO.getProdutoId())
+                .quantidade(itemPedidoDTO.getQuantidade())
+                .precoUnitario(itemPedidoDTO.getPrecoUnitario())
                 .build();
     }
 
     public List<ItemPedidoDomain> toDomain(List<ItemPedidoDTO> itens) {
         return itens.stream()
                 .map(this::toDomain)
-                .collect(Collectors.toList());
+                .collect(toList());
     }
 
     public ItemPedidoDTO toDTO(ItemPedidoDomain itemPedidoDomain) {
@@ -38,7 +39,7 @@ public class ItemPedidoMapper {
     public List<ItemPedidoDTO> toDTO(List<ItemPedidoDomain> itens) {
         return itens.stream()
                 .map(this::toDTO)
-                .collect(Collectors.toList());
+                .collect(toList());
     }
 
     public ItemPedido toEntity(ItemPedidoDomain itemPedidoDomain) {
@@ -54,6 +55,6 @@ public class ItemPedidoMapper {
     public List<ItemPedido> toEntity(List<ItemPedidoDomain> itens) {
         return itens.stream()
                 .map(this::toEntity)
-                .collect(Collectors.toList());
+                .collect(toList());
     }
 }

@@ -1,7 +1,7 @@
 package br.com.pedido.infrastructure.messaging;
 
+import br.com.pedido.application.dto.PedidoMessageDTO;
 import br.com.pedido.application.mapper.PagamentoMapper;
-import br.com.pedido.application.mapper.PedidoMapper;
 import br.com.pedido.core.domain.PedidoDomain;
 import br.com.pedido.core.gateways.PedidoMessageGateway;
 import lombok.extern.slf4j.Slf4j;
@@ -26,8 +26,6 @@ public class PedidoMessageGatewayImpl implements PedidoMessageGateway {
 
     @Override
     public void send(PedidoDomain pedido) {
-        log.info("==============================================================");
-        log.info("{}", pedido);
         var dto = pagamentoMapper.toDTO(pedido);
         log.info("{}", dto);
         kafkaTemplate.send(this.topic, dto);

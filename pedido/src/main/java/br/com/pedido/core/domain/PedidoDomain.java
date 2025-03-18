@@ -1,5 +1,6 @@
 package br.com.pedido.core.domain;
 
+import br.com.pedido.core.enums.Status;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,7 +18,7 @@ public class PedidoDomain {
     private Long id;
     private ClienteDomain cliente;
     private LocalDateTime dataPedido;
-    private String status;
+    private Status status;
     private BigDecimal valorTotal;
     private List<ItemPedidoDomain> itens;
 
@@ -29,7 +30,7 @@ public class PedidoDomain {
     public PedidoDomain(ClienteDomain cliente, List<ItemPedidoDomain> itens) {
         this.cliente = cliente;
         this.dataPedido = LocalDateTime.now();
-        this.status = "PENDENTE";
+        this.status = Status.PENDENTE;
         this.itens = itens;
         this.valorTotal = calcularValorTotal(itens);
     }

@@ -25,8 +25,6 @@ public class PagamentoDomain {
 
     private LocalDateTime dataPagamento;
 
-    private String status;
-
     private BigDecimal valorTotal;
 
     private Status statusPagamento;

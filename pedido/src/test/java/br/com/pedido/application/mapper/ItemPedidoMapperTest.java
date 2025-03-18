@@ -23,13 +23,11 @@ class ItemPedidoMapperTest {
     @Test
     void toDomain_DeveConverterItemPedidoDTOParaDomain() {
         ItemPedidoDTO dto = new ItemPedidoDTO(1L, 2, BigDecimal.valueOf(50.0));
-
         ItemPedidoDomain domain = itemPedidoMapper.toDomain(dto);
-
         assertNotNull(domain);
-        assertEquals(dto.produtoId(), domain.getProdutoId());
-        assertEquals(dto.quantidade(), domain.getQuantidade());
-        assertEquals(dto.precoUnitario(), domain.getPrecoUnitario());
+        assertEquals(dto.getProdutoId(), domain.getProdutoId());
+        assertEquals(dto.getQuantidade(), domain.getQuantidade());
+        assertEquals(dto.getPrecoUnitario(), domain.getPrecoUnitario());
     }
 
     @Test
@@ -43,8 +41,8 @@ class ItemPedidoMapperTest {
 
         assertNotNull(domainList);
         assertEquals(2, domainList.size());
-        assertEquals(dtoList.get(0).produtoId(), domainList.get(0).getProdutoId());
-        assertEquals(dtoList.get(1).produtoId(), domainList.get(1).getProdutoId());
+        assertEquals(dtoList.get(0).getProdutoId(), domainList.get(0).getProdutoId());
+        assertEquals(dtoList.get(1).getProdutoId(), domainList.get(1).getProdutoId());
     }
 
     @Test
@@ -58,9 +56,9 @@ class ItemPedidoMapperTest {
         ItemPedidoDTO dto = itemPedidoMapper.toDTO(domain);
 
         assertNotNull(dto);
-        assertEquals(domain.getProdutoId(), dto.produtoId());
-        assertEquals(domain.getQuantidade(), dto.quantidade());
-        assertEquals(domain.getPrecoUnitario(), dto.precoUnitario());
+        assertEquals(domain.getProdutoId(), dto.getProdutoId());
+        assertEquals(domain.getQuantidade(), dto.getQuantidade());
+        assertEquals(domain.getPrecoUnitario(), dto.getPrecoUnitario());
     }
 
     @Test
@@ -74,8 +72,8 @@ class ItemPedidoMapperTest {
 
         assertNotNull(dtoList);
         assertEquals(2, dtoList.size());
-        assertEquals(domainList.get(0).getProdutoId(), dtoList.get(0).produtoId());
-        assertEquals(domainList.get(1).getProdutoId(), dtoList.get(1).produtoId());
+        assertEquals(domainList.get(0).getProdutoId(), dtoList.get(0).getProdutoId());
+        assertEquals(domainList.get(1).getProdutoId(), dtoList.get(1).getProdutoId());
     }
 
     @Test

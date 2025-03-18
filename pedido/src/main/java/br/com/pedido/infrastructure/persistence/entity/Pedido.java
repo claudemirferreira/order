@@ -20,12 +20,13 @@ import java.util.List;
 public class Pedido {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "pedido_id")
     private Long id;
 
-    @Column(name = "cliente_id", nullable = false)
-    private Long clienteId;
+    @ManyToOne
+    @JoinColumn(name = "cliente_id", nullable = false)
+    private Cliente cliente;
 
     @Column(name = "data_pedido", nullable = false)
     private LocalDateTime dataPedido;

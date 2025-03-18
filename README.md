@@ -33,4 +33,10 @@ java -jar target/pagamento-0.0.1-SNAPSHOT.jar
 * [Kafka UI](http://localhost:8082/ui/clusters/local/all-topics?perPage=25)
 
 
+## System Designer
 
+![alt text](<Screenshot from 2025-03-18 08-15-00.png>)
+
+
+## Diagrama Entidade e Relacionamento
+![alt text](image.png)
